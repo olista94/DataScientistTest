@@ -1,0 +1,131 @@
+Para que el código en C# lea los datos desde el archivo Excel, puedes usar una biblioteca como **EPPlus** o **ClosedXML** para trabajar con Excel de manera sencilla. Aquí te muestro cómo adaptar el código para leer el archivo Excel que enviaste y realizar la categorización.
+
+### Código Adaptado
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using OfficeOpenXml; // Biblioteca EPPlus
+
+class Program
+{
+    static void Main()
+    {
+        // Ruta del archivo Excel
+        string filePath = "1-Data_Test_A.xlsx";
+
+        // Leer datos del archivo Excel
+        var transactions = ReadTransactionsFromExcel(filePath);
+
+        // Categorizar transacciones
+        foreach (var transaction in transactions)
+        {
+            transaction.Category = CategorizeTransaction(transaction.Description, transaction.Amount);
+        }
+
+        // Generar tabla resumen
+        var summary = transactions
+            .GroupBy(t => t.Category)
+            .Select(g => new { Category = g.Key, Count = g.Count() })
+            .ToList();
+
+        // Mostrar resultados
+        Console.WriteLine("Listado de Transacciones con Categorías:");
+        foreach (var transaction in transactions)
+        {
+            Console.WriteLine($"{transaction.AccountId}, {transaction.Amount}, {transaction.Description}, {transaction.Category}");
+        }
+
+        Console.WriteLine("\nResumen por Categoría:");
+        foreach (var category in summary)
+        {
+            Console.WriteLine($"{category.Category}: {category.Count} transacciones");
+        }
+    }
+
+    static List<Transaction> ReadTransactionsFromExcel(string filePath)
+    {
+        var transactions = new List<Transaction>();
+
+        // Configurar EPPlus para permitir trabajar sin licencia comercial
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+        // Leer el archivo Excel
+        using (var package = new ExcelPackage(new FileInfo(filePath)))
+        {
+            var sheet = package.Workbook.Worksheets["Transactions"]; // Hoja con las transacciones
+            int rowCount = sheet.Dimension.Rows;
+
+            for (int row = 2; row <= rowCount; row++) // Comienza en la fila 2 para saltar el encabezado
+            {
+                transactions.Add(new Transaction
+                {
+                    AccountId = sheet.Cells[row, 1].Text,
+                    Amount = decimal.Parse(sheet.Cells[row, 2].Text),
+                    CreatedDate = DateTime.Parse(sheet.Cells[row, 3].Text),
+                    Description = sheet.Cells[row, 5].Text // Columna de la descripción
+                });
+            }
+        }
+
+        return transactions;
+    }
+
+    static string CategorizeTransaction(string description, decimal amount)
+    {
+        description = description.ToLower();
+        if (description.Contains("nómina") || description.Contains("nomina"))
+            return "Salary";
+        else if (description.Contains("transferencia"))
+            return "Transfers";
+        else if (description.Contains("cuota") || description.Contains("servicios") || description.Contains("pago"))
+            return "Bills/Services";
+        else if (amount < 0 && (description.Contains("compra") || description.Contains("tienda")))
+            return "Shopping";
+        else if (amount > 0)
+            return "Deposits";
+        else
+            return "Others";
+    }
+}
+
+public class Transaction
+{
+    public string AccountId { get; set; }
+    public decimal Amount { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public string Description { get; set; }
+    public string Category { get; set; }
+}
+```
+
+---
+
+### Instrucciones para Configurar el Proyecto
+
+1. **Agregar la biblioteca EPPlus**:
+   - Abre la consola de administrador de paquetes en Visual Studio y ejecuta:
+     ```bash
+     Install-Package EPPlus
+     ```
+   - Esto instalará la biblioteca necesaria para trabajar con Excel.
+
+2. **Colocar el archivo Excel**:
+   - Asegúrate de que el archivo **1-Data_Test_A.xlsx** esté en la misma carpeta que tu ejecutable, o especifica la ruta completa al archivo.
+
+3. **Estructura del Excel**:
+   - Asegúrate de que la hoja se llame "Transactions" y tenga las columnas:
+     - **account_id** en la primera columna.
+     - **amount** en la segunda columna.
+     - **created_date** en la tercera columna.
+     - **description** en la quinta columna.
+
+4. **Salida**:
+   - El programa mostrará las transacciones categorizadas y el resumen en la consola.
+
+---
+
+¿Te gustaría ayuda adicional para configurar este proyecto?
