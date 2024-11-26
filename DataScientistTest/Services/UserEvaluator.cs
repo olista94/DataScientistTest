@@ -17,27 +17,28 @@ namespace DataScientistTest.Services
                     .Where(t => t.Transaction.AccountId == user.AccountId)
                     .ToList();
 
-                // Calcular métricas simples (puedes ajustar esta lógica)
+                // Calcular gastos
                 int totalExpenses = userTransactions
-                    .Where(t => t.Category == "Gastos")
+                    .Where(t => t.Category == "Shopping" || t.Category == "Bills/Services" || t.Category == "Interests/Fees")
                     .Sum(t => t.Transaction.Amount);
 
+                // Calcular ingresos
                 int totalIncome = userTransactions
-                    .Where(t => t.Category == "Ingresos")
+                    .Where(t => t.Category == "Salary" || t.Category == "Deposits" || t.Category == "Own Transfers")
                     .Sum(t => t.Transaction.Amount);
 
                 // Ranking basado en balance y patrón de ingresos/gastos
-                int score = totalIncome - totalExpenses + user.CurrentBalance;
+                int score = totalIncome - totalExpenses;
 
                 evaluations.Add(new UserEvaluation
                 {
                     OwnerId = user.OwnerId,
-                    Ranking = score, // Ordenaremos después
-                    Justification = $"Ingresos: {totalIncome / 100.0}€, Gastos: {totalExpenses / 100.0}€, Balance: {user.CurrentBalance / 100.0}€"
+                    Ranking = score,
+                    Justification = $"Ingresos: {totalIncome}, Gastos: {totalExpenses}, Balance: {user.CurrentBalance}"
                 });
             }
 
-            // Ordenar evaluaciones por puntaje descendente y asignar ranking
+            // Ordenar puntaje descendente y asignar ranking
             var orderedEvaluations = evaluations
                 .OrderByDescending(e => e.Ranking)
                 .Select((e, index) => new UserEvaluation

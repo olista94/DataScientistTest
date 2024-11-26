@@ -14,7 +14,7 @@ namespace DataScientistTest.Utils
         {
             using (var package = new ExcelPackage())
             {
-                // Crear hoja de transacciones categorizadas
+                // Hoja de transacciones categorizadas
                 var transactionSheet = package.Workbook.Worksheets.Add("CategorizedTransactions");
                 transactionSheet.Cells[1, 1].Value = "AccountId";
                 transactionSheet.Cells[1, 2].Value = "Amount";
@@ -36,7 +36,7 @@ namespace DataScientistTest.Utils
                     row++;
                 }
 
-                // Crear hoja de evaluaciones de usuarios
+                // Hoja de evaluaciones de usuarios
                 var userSheet = package.Workbook.Worksheets.Add("UserEvaluations");
                 userSheet.Cells[1, 1].Value = "OwnerId";
                 userSheet.Cells[1, 2].Value = "Ranking";
@@ -52,7 +52,6 @@ namespace DataScientistTest.Utils
                     row++;
                 }
 
-                // Guardar archivo
                 package.SaveAs(new FileInfo(filePath));
             }
         }

@@ -8,7 +8,6 @@ namespace DataScientistTest.Utils
     public class ExcelReader
     {
         // Método para leer la hoja "Transactions"
-        // Método para cargar las transacciones desde la hoja "Transactions"
         public static List<Transaction> LoadTransactions(ExcelPackage package)
         {
             var transactions = new List<Transaction>();
@@ -17,20 +16,17 @@ namespace DataScientistTest.Utils
             if (worksheet == null)
                 throw new Exception("La hoja 'Transactions' no existe en el archivo Excel.");
 
-            // El formato que parece estar en el archivo Excel: "6/28/22 11:27"
             string[] dateFormats = { "M/d/yy H:mm", "M/d/yyyy H:mm", "yyyy-MM-dd HH:mm:ss" };
 
             for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
             {
                 DateTime createdDate;
-                string dateText = worksheet.Cells[row, 3].Text; // Asumiendo que la fecha está en la columna 3
+                string dateText = worksheet.Cells[row, 3].Text;
 
-                // Intentar analizar la fecha usando el formato esperado
                 if (!DateTime.TryParseExact(dateText, dateFormats, null, System.Globalization.DateTimeStyles.None, out createdDate))
                 {
-                    // Si no se puede analizar, asignar un valor predeterminado o generar un error
                     Console.WriteLine($"Error al analizar la fecha: {dateText}");
-                    createdDate = DateTime.MinValue; // O cualquier otro valor predeterminado
+                    createdDate = DateTime.MinValue;
                 }
 
                 transactions.Add(new Transaction
@@ -46,7 +42,6 @@ namespace DataScientistTest.Utils
             return transactions;
         }
 
-
         // Método para leer la hoja "Users"
         public static List<User> LoadUsers(ExcelPackage package)
         {
@@ -56,20 +51,17 @@ namespace DataScientistTest.Utils
             if (worksheet == null)
                 throw new Exception("La hoja 'Users' no existe en el archivo Excel.");
 
-            // Formatos de fecha que se podrían usar
             string[] dateFormats = { "M/d/yy H:mm", "M/d/yyyy H:mm", "yyyy-MM-dd HH:mm:ss" };
 
             for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
             {
                 DateTime lastBalanceUpdate;
-                string dateText = worksheet.Cells[row, 5].Text; // Asumiendo que la fecha está en la columna 5 (LastBalanceUpdate)
+                string dateText = worksheet.Cells[row, 5].Text;
 
-                // Intentar analizar la fecha usando el formato esperado
                 if (!DateTime.TryParseExact(dateText, dateFormats, null, System.Globalization.DateTimeStyles.None, out lastBalanceUpdate))
                 {
-                    // Si no se puede analizar, asignar un valor predeterminado o generar un error
                     Console.WriteLine($"Error al analizar la fecha: {dateText}");
-                    lastBalanceUpdate = DateTime.MinValue; // O cualquier otro valor predeterminado
+                    lastBalanceUpdate = DateTime.MinValue;
                 }
 
                 users.Add(new User

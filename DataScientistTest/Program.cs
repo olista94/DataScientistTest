@@ -15,25 +15,22 @@ namespace DataScientistTest
         static void Main(string[] args)
         {
 
-            // ExcelPackage pck = new ExcelPackage();
-
-            // Configuración de licencia para EPPlus
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             // Rutas del archivo de entrada y salida
-            string inputFilePath = @"C:\Users\Usuario\source\repos\DataScientistTest\DataScientistTest\DataScientistTest\1-Data_Test_A.xlsx"; // Asegúrate de colocar este archivo en la carpeta raíz del proyecto
+            // IMPORTANTE: Colocar el archivo en la carpeta raíz del proyecto y MODIFICAR la ruta
+            string inputFilePath = @"C:\Users\Usuario\source\repos\DataScientistTest\DataScientistTest\DataScientistTest\1-Data_Test_A.xlsx";
             string outputFilePath = @"C:\Users\Usuario\source\repos\DataScientistTest\DataScientistTest\DataScientistTest\Resultados_Test.xlsx";
 
             try
             {
-                // Verificar si el archivo de entrada existe
+
                 if (!File.Exists(inputFilePath))
                 {
                     Console.WriteLine("El archivo Excel de entrada no fue encontrado.");
                     return;
                 }
 
-                // Inicializar servicios y datos
                 List<Transaction> transactions;
                 List<User> users;
                 List<CategorizedTransaction> categorizedTransactions;

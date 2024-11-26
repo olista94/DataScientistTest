@@ -11,10 +11,8 @@ namespace DataScientistTest.Services
 
             foreach (var transaction in transactions)
             {
-                // Usar el nuevo método CategorizeTransaction para obtener la categoría
                 string category = CategorizeTransaction(transaction.Description, transaction.Amount);
 
-                // Agregar la transacción categorizada a la lista
                 categorizedTransactions.Add(new CategorizedTransaction
                 {
                     Transaction = transaction,
@@ -25,25 +23,28 @@ namespace DataScientistTest.Services
             return categorizedTransactions;
         }
 
-        // Método de categorización que se usará en cada transacción
-        static string CategorizeTransaction(string description, decimal amount)
+        private string CategorizeTransaction(string description, int amount)
         {
-            // Convertir la descripción a minúsculas para evitar problemas de mayúsculas/minúsculas
             description = description.ToLower();
 
-            // Lógica de categorización:
-            if (description.Contains("nómina") || description.Contains("nomina"))
-                return "Salary"; // Salarios
-            else if (description.Contains("transferencia"))
-                return "Transfers"; // Transferencias
-            else if (description.Contains("cuota") || description.Contains("servicios") || description.Contains("pago"))
-                return "Bills/Services"; // Servicios o cuotas
-            else if (amount < 0 && (description.Contains("compra") || description.Contains("tienda")))
-                return "Shopping"; // Compras en tiendas
+            if (description.Contains("nómina") || description.Contains("salario"))
+                return "Salary";
+            else if (description.Contains("transferencia entre cuentas") || description.Contains("enviado desde"))
+                return "Own Transfers";
+            else if (description.Contains("transferencia de") || description.Contains("bizum"))
+                return "Third-Party Transfers";
+            else if (description.Contains("compra en") || description.Contains("reintegro"))
+                return "Shopping";
+            else if (description.Contains("cuota") || description.Contains("servicios") || description.Contains("pago mensual") || description.Contains("tarjeta"))
+                return "Bills/Services";
+            else if (description.Contains("intereses") || description.Contains("comisiones") || description.Contains("liquidación"))
+                return "Interests/Fees";
             else if (amount > 0)
-                return "Deposits"; // Depósitos
+                return "Deposits";
+            else if (amount < 0)
+                return "Expenses";
             else
-                return "Others"; // Otros casos
+                return "Others";
         }
     }
 }
